@@ -12,7 +12,7 @@ pipeline {
 
         // AWS ECR 정보. 본인껄로 넣으세요!!
         AWS_ECR_CREDENTIAL_ID = 'aws_cre'
-        AWS_ECR_URI = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com' // 레지스트리주소
+        AWS_ECR_URI = '217026896236.dkr.ecr.ap-northeast-2.amazonaws.com' // 레지스트리주소
         AWS_ECR_IMAGE_NAME = 'fast' // 레포지토리이름.
         AWS_REGION = 'ap-northeast-2'
         
