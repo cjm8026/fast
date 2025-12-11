@@ -1,28 +1,32 @@
 pipeline {
     agent any
-    
+   
   environment {
         TIME_ZONE = 'Asia/Seoul'
-        
+       
         // GitHub 계정정보. 본인껄로 넣으세요!!
         GIT_TARGET_BRANCH = 'main'
         GIT_REPOSITORY_URL = 'https://github.com/cjm8026/fast'
         GIT_CREDENTIONALS_ID = 'git_cre'
-        
+
+
         GIT_EMAIL = 'ekfrml1@gmail.com'
         GIT_NAME = 'cjm8026'
         GIT_REPOSITORY_DEP = 'git@github.com:cjm8026/deployment.git'
+
 
         // AWS ECR 정보. 본인껄로 넣으세요!!
         AWS_ECR_CREDENTIAL_ID = 'aws_cre'
         AWS_ECR_URI = '217026896236.dkr.ecr.ap-northeast-2.amazonaws.com' // 레지스트리주소
         AWS_ECR_IMAGE_NAME = 'fast' // 레포지토리이름.
         AWS_REGION = 'ap-northeast-2'
-        
+       
     }
+
 
     stages {
         // 첫번째 스테이지 : 초기화.
+
 
         stage('1.init') {
             steps {
@@ -31,7 +35,9 @@ pipeline {
             }
         }
 
+
         // 두번째 스테이지 : 소스코드 클론
+
 
         stage('2.Cloning Repository') {
             steps {
@@ -40,10 +46,12 @@ pipeline {
                     credentialsId: "${GIT_CREDENTIONALS_ID}",
                     url: "${GIT_REPOSITORY_URL}"
 
+
                 // 깃플러그인 설치하면 마치 함수쓰듯 사용가능.
             }
-        
+       
         }
+
 
         stage('3.Build Docker Image') {
             steps {
@@ -57,6 +65,8 @@ pipeline {
                 // BUILD_NUMBER = 젠킨스가 제공해주는 변수.
             }
         }
+
+
 
 
         stage('4.Push to ECR') {
@@ -92,18 +102,20 @@ pipeline {
                         '''
                     }
 
+
                 }                
             }
         }
+
 
         stage('5.EKS manifest file update') {
             steps {
                 git credentialsId: GIT_CREDENTIONALS_ID, url: GIT_REPOSITORY_DEP, branch: 'main'
                 script {
-                    '''
+                    sh '''
                     git config --global user.email ${GIT_EMAIL}
                     git config --global user.name ${GIT_NAME}
-                    sed -i 's@${AWS_ECR_URI}/${AWS_ECR_IMAGE_NAME}:.*@${AWS_ECR_URI}/${AWS_ECR_IMAGE_NAME}:${BUILD_NUMBER}@g' test-dep.yml
+                    sed -i s@${AWS_ECR_URI}/${AWS_ECR_IMAGE_NAME}:.*@${AWS_ECR_URI}/${AWS_ECR_IMAGE_NAME}:${BUILD_NUMBER}@g test-dep.yml
                     git add .
                     git branch -M main
                     git commit -m 'fixed tag ${BUILD_NUMBER}'
@@ -112,6 +124,7 @@ pipeline {
                     git push origin main
                     '''
                 }
+
 
             }
             post {
@@ -123,6 +136,11 @@ pipeline {
                 }
             }
         }
+
+
+
+
+
 
 
 
